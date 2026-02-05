@@ -13,9 +13,9 @@ def find_idx_nearest(array, value):
 
 def initialization_contour(V,B,V0):
     """ Initialize electrical potential of domain boundaries at V0 """
-    V[0,:] = V0 # top edge
-    V[-1,:] = V0 # bottom edge
-    V[:,-1] = V0 # right edge
+    V[0,:] = V0  # top edge
+    V[-1,:] = V0  # bottom edge
+    V[:,-1] = V0  # right edge
     B[0,:] = True
     B[-1,:] = True
     B[:,-1] = True
@@ -29,8 +29,8 @@ def create_equipotential_disk(V,B,idx_z1,idx_z2,idx_R,V1,V2):
     return V, B
 
 def initialize_variables_Laplace(grid_half_width,disk_radius,half_height_domain,h,z_pos_disk1,z_pos_disk2,V0,V1,V2):
-    r = np.arange(0, grid_half_width, h) # radius
-    z = np.arange(-half_height_domain, half_height_domain, h) # width
+    r = np.arange(0, grid_half_width, h)  # radius
+    z = np.arange(-half_height_domain, half_height_domain, h)  # width
     Nr = len(r)
     Nz = len(z)
 
@@ -59,11 +59,6 @@ def compute_diff(Va,Vb):
     return (squared_diff/(Nr*Nz))**(1/2)
 
 
-
-
-
-
-
 """============================================================================
 METHOD OF JACOBI to solve Laplace equation (relaxation)
 -------------------------------------------------------------------------------
@@ -82,9 +77,9 @@ def iteration_jacobi_FAST(V,B,r_repmat,h,idx_z1,idx_z2,idx_R,V1,V2):
     """         
     V[1:-1,1:-1] = (V_copy[1:-1,2:]*(1+h/(2*r_repmat[1:-1,1:-1]))+V_copy[1:-1,:-2]*(1-h/(2*r_repmat[1:-1,1:-1]))+V_copy[2:,1:-1]+V_copy[:-2,1:-1])/4
 
-    create_equipotential_disk(V,B,idx_z1,idx_z2,idx_R,V1,V2) # maintain electric potential in conducting disk(s) constant
+    create_equipotential_disk(V,B,idx_z1,idx_z2,idx_R,V1,V2)  # maintain electric potential in conducting disk(s) constant
 
-    V[:,0] = V_copy[:,1] # on axis of disk, dV/dr=0
+    V[:,0] = V_copy[:,1]  # on axis of disk, dV/dr=0
 
     return compute_diff(V_copy,V)
 
@@ -110,14 +105,14 @@ def compute_E_disk(V,B,h):
     norme_E = np.zeros((Nz-2,Nr-1))
     for i in range(1,Nz-1): 
         for j in range(1,Nr-1):
-            if (B[i,j] or B[i,j+1] or B[i,j-1] or B[i-1,j] or B[i+1,j]): # if grid point on domain boundary
+            if (B[i,j] or B[i,j+1] or B[i,j-1] or B[i-1,j] or B[i+1,j]):  # if grid point on domain boundary
                 Er[i-1,j-1] = 0.
                 Ez[i-1,j-1] = 0.
             else:
                 Er[i-1,j-1] = -(V[i,j+1]-V[i,j-1])/(2.*h)
                 Ez[i-1,j-1] = -(V[i+1,j]-V[i-1,j])/(2.*h)
 
-    Er[:,0] = 0 # first column is the symmetry axis
+    Er[:,0] = 0  # first column is the symmetry axis
     Ez[:,0] = -(V[2:,0]-V[:-2,0])/(2.*h)                
 
     norme_E = (Er**2+Ez**2)**0.5
@@ -133,7 +128,7 @@ def compute_E_pt_charge(V,B,h):
     norme_E = np.zeros((Nz-2,Nr-2))
     for i in range(1,Nz-1): 
         for j in range(1,Nr-1):
-            if (B[i,j] or B[i,j+1] or B[i,j-1] or B[i-1,j] or B[i+1,j]): # if grid point on domain boundary
+            if (B[i,j] or B[i,j+1] or B[i,j-1] or B[i-1,j] or B[i+1,j]):  # if grid point on domain boundary
                 Er[i-1,j-1] = 0.
                 Ez[i-1,j-1] = 0.
             else:
@@ -148,8 +143,8 @@ def compute_E_pt_charge(V,B,h):
 
 def initialize_plane_grid_for_uniformly_charged_disk(half_height_domain,grid_half_width,grid_step):
 
-    r = np.arange(0, grid_half_width, grid_step) # width
-    z = np.arange(-half_height_domain, half_height_domain, grid_step) # width
+    r = np.arange(0, grid_half_width, grid_step)  # width
+    z = np.arange(-half_height_domain, half_height_domain, grid_step)  # width
     Nr = len(r)
     Nz = len(z)
 
@@ -161,8 +156,8 @@ def initialize_plane_grid_for_uniformly_charged_disk(half_height_domain,grid_hal
 
 def initialize_plane_grid_for_pt_charge_at_origin(half_height_domain,grid_half_width,grid_step):
 
-    r = np.arange(0, grid_half_width, grid_step) # width
-    z = np.arange(-half_height_domain, half_height_domain, grid_step) # width
+    r = np.arange(0, grid_half_width, grid_step)  # width
+    z = np.arange(-half_height_domain, half_height_domain, grid_step)  # width
     Nr = len(r)
     Nz = len(z)
     B = np.zeros((Nz,Nr), dtype=bool)
@@ -178,9 +173,9 @@ def initialize_plane_grid_for_pt_charge_at_origin(half_height_domain,grid_half_w
 
 
 def electric_potential_point_charge_cartesian(r_charge, R, Z, charge):
-    epsilon0 = 8.854e-12  # Permittivity of free space (F/m)
+    epsilon0 = 8.854e-12  # permittivity of free space (F/m)
 
-    # separation vector (between charge and field point)
+    # Separation vector (between charge and field point)
     sx = R - r_charge[0]
     sy = 0. - r_charge[1]
     sz = Z - r_charge[2]
@@ -198,8 +193,6 @@ def calculate_V_disk_at_origin_uniform_surface_charge_density(z_disk,charge_one_
     x_positions = np.arange(-disk_radius, disk_radius, inter_charge_distance)
     y_positions = np.arange(-disk_radius, disk_radius, inter_charge_distance)
     cnt = 0
-
-
 
     Nr = len(r)
     Nz = len(z)
@@ -220,7 +213,7 @@ def calculate_V_disk_at_origin_uniform_surface_charge_density(z_disk,charge_one_
     YY[RR_mask] = np.nan
     
     # Create a figure and 3D axis
-    fig = plt.figure(figsize=(8, 8)) # Width, height in inches.
+    fig = plt.figure(figsize=(8, 8))  # width, height in inches.
     ax = fig.add_subplot(111, projection='3d')
     plt.subplots_adjust(left=0)
     # Create scatter plot
@@ -228,14 +221,14 @@ def calculate_V_disk_at_origin_uniform_surface_charge_density(z_disk,charge_one_
     #ax.view_init(60, 35)
     # Set specific Z-axis ticks
     ax.set_zticks([-1, 0, 1])
-    ax.plot([0, 0], [-1, 1], 'k', linewidth=2) # Vierkante haken om 0,0 toegevoegd
+    ax.plot([0, 0], [-1, 1], 'k', linewidth=2)  # vierkante haken om 0,0 toegevoegd
     #ax.set_zlim(-1, 1)
-    ax.legend(['point charges','disk axis'])
+    ax.legend(['punt ladingen','schijf as'])
     # Labels
-    ax.set_xlabel('X Axis')
-    ax.set_ylabel('Y Axis')
-    ax.set_zlabel('Z Axis')
-    ax.set_title('Uniformly charged disk (%1.0d point charges)' %cnt)
+    ax.set_xlabel('X as')
+    ax.set_ylabel('Y as')
+    ax.set_zlabel('Z as')
+    ax.set_title(f'Uniform geladen schijf ({cnt:1d} punt ladingen)')
     ax.set_box_aspect(None, zoom=0.88)
 
     return V, cnt
@@ -256,7 +249,7 @@ def calculate_E_point_charge_at_origin(E,charge_one_point,r_field):
 """
 
 def calculate_V_point_charge_at_origin(charge_one_point,r,z):
-    # one point charge at origin:
+    # One point charge at origin:
     xc = 0
     yc = 0
     zc = 0
@@ -271,19 +264,9 @@ def calculate_V_point_charge_at_origin(charge_one_point,r,z):
     return V
 
 
-
-
-
-
-
-
-
-
-
 def extents(f):
     delta = f[1] - f[0]
     return [f[0] - delta/2, f[-1] + delta/2]
-
 
 
 def plot_results_disk(Ez,Er,normE,V,r,z,h,disk_radius,z_pos_disk1,z_pos_disk2):
@@ -293,27 +276,27 @@ def plot_results_disk(Ez,Er,normE,V,r,z,h,disk_radius,z_pos_disk1,z_pos_disk2):
     cont=plt.contour(r,z,V,nb_equipot,colors='k')
     plt.plot([0, disk_radius-h], [z_pos_disk1, z_pos_disk1], 'r', linewidth=2)
     plt.plot([0, disk_radius-h], [z_pos_disk2, z_pos_disk2], 'r', linewidth=2)
-    plt.ylabel("Height [m]")
-    plt.xlabel("Radius [m]")   
-    plt.title('Electric potential \n(equipotential lines)')
+    plt.ylabel("Hoogte (m)")
+    plt.xlabel("Radius (m)")
+    plt.title('Elektrisch potentiaal \n(equipotentiaal lijnen)')
     plt.axis('scaled')
     plt.clabel(cont)
 
     plt.subplots_adjust(wspace=0.5)
 
-    # create field point coordinates:
+    # Create field point coordinates:
     Z, R = np.meshgrid(z[1:-1], r[1:-1], indexing='ij')
 
     plt.figure(10)
     plt.subplot(1, 3, 2)
-    skip = 5   # downsample for clearer arrows
+    skip = 5  # downsample for clearer arrows
     plt.quiver(R[::skip, ::skip], Z[::skip, ::skip], Er[::skip, ::skip], Ez[::skip, ::skip])
     plt.plot([0, disk_radius-h], [z_pos_disk1, z_pos_disk1], 'r', linewidth=2)
     plt.plot([0, disk_radius-h], [z_pos_disk2, z_pos_disk2], 'r', linewidth=2)
-    plt.ylabel("Height [m]")
-    plt.xlabel("Radius [m]")  
+    plt.ylabel("Hoogte (m)")
+    plt.xlabel("Radius (m)")
     plt.axis('scaled')
-    plt.title("Electric field vectors")
+    plt.title("Elektrische veld vectoren")
 
     plt.figure(10)
     plt.subplot(1, 3, 3)
@@ -321,15 +304,13 @@ def plot_results_disk(Ez,Er,normE,V,r,z,h,disk_radius,z_pos_disk1,z_pos_disk2):
             extent=extents(r[:-1]) + extents(z[1:-1]), origin='lower')
     plt.plot([0, disk_radius-h], [z_pos_disk1, z_pos_disk1], 'r', linewidth=2)
     plt.plot([0, disk_radius-h], [z_pos_disk2, z_pos_disk2], 'r', linewidth=2)
-    plt.ylabel("Height [m]")
-    plt.xlabel("Radius [m]")
-    plt.title("norm Electric field")
+    plt.ylabel("Hoogte (m)")
+    plt.xlabel("Radius (m)")
+    plt.title("Norm elektrische veld")
     plt.colorbar(label='|E| (V/m)')
     plt.axis('scaled')
 
     plt.show()
-
-
 
 
 def plot_results_pt_charge_at_origin(Ez,Er,normE,V,r,z,h):
@@ -338,9 +319,9 @@ def plot_results_pt_charge_at_origin(Ez,Er,normE,V,r,z,h):
     nb_equipot = 200
     cont=plt.contour(r,z,V,nb_equipot,colors='k')
     plt.scatter(0,0,marker = 'o',color ='red')
-    plt.ylabel("Height [m]")
-    plt.xlabel("Radius [m]")   
-    plt.title('Electric potential \n(equipotential lines)')
+    plt.ylabel("Hoogte (m)")
+    plt.xlabel("Radius (m)")
+    plt.title('Elektrisch potentiaal \n(equipotentiaal lijnen)')
     plt.axis('scaled')
     plt.clabel(cont)
 
@@ -351,22 +332,22 @@ def plot_results_pt_charge_at_origin(Ez,Er,normE,V,r,z,h):
 
     plt.figure(10)
     plt.subplot(1, 3, 2)
-    skip = 5   # downsample for clearer arrows
+    skip = 5  # downsample for clearer arrows
     plt.quiver(R[::skip, ::skip], Z[::skip, ::skip], Er[::skip, ::skip], Ez[::skip, ::skip])
     plt.scatter(0,0,marker = 'o',color ='red')
-    plt.ylabel("Height [m]")
-    plt.xlabel("Radius [m]")  
+    plt.ylabel("Hoogte (m)")
+    plt.xlabel("Radius (m)")
     plt.axis('scaled')
-    plt.title("Electric field vectors")
+    plt.title("Elektrische veld vectoren")
 
     plt.figure(10)
     plt.subplot(1, 3, 3)
     plt.imshow(normE, aspect='auto', interpolation='none',
             extent=extents(r[1:-1]) + extents(z[1:-1]), origin='lower')
     plt.scatter(0,0,marker = 'o',color ='red')
-    plt.ylabel("Height [m]")
-    plt.xlabel("Radius [m]")
-    plt.title("norm Electric field")
+    plt.ylabel("Hoogte (m)")
+    plt.xlabel("Radius (m)")
+    plt.title("Norm elektrische veld")
     plt.colorbar(label='|E| (V/m)')
     plt.axis('scaled')
 
